@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Weather App</string>
+    <string name="openWeather_API">e243c640522e46b7a9e8936150c5c489</string>
+    <string name="wunderground_API">2b118671ed3cb3c2</string>
+    <string name="maps_API">AIzaSyBVIIbBvQtTn2C4o5h9OBZZJLP9gbzfJBY</string>
+    <string name="today_weather">Today</string>
+    <string name="show_map">Map</string>
+    <string name="Forecast">Forecast</string>
+</resources>
