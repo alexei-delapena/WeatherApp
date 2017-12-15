@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.project.afinal.weatherapp.WeatherActivity">
+
+
+    <Button
+        android:id="@+id/getWeatherData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomNavView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp"
+        android:onClick="getWeatherData"
+        android:text="Update Weather" />
+
+    <TextView
+        android:id="@+id/CurrentTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/FeelsLike"
+        android:layout_alignTop="@+id/imageView"
+        android:text="Temp"
+        android:textSize="55dp" />
+
+    <TextView
+        android:id="@+id/WindSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/FeelsLike"
+        android:layout_below="@+id/FeelsLike"
+        android:layout_marginTop="16dp"
+        android:text="Wind Speed" />
+
+    <TextView
+        android:id="@+id/FeelsLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Location"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:text="Feels Like" />
+
+    <TextView
+        android:id="@+id/Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignStart="@+id/CurrentTemp"
+        android:text="Location" />
+
+    <TextView
+        android:id="@+id/Condition_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/WindSpeed"
+        android:layout_below="@+id/WindSpeed"
+        android:layout_marginTop="17dp"
+        android:text="Conditions" />
+
+    <TextView
+        android:id="@+id/lblFeelsLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/WindSpeed"
+        android:layout_alignStart="@+id/imageView"
+        android:text="Feels Like:" />
+
+    <TextView
+        android:id="@+id/lblWindSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/WindSpeed"
+        android:layout_alignBottom="@+id/WindSpeed"
+        android:layout_alignStart="@+id/lblFeelsLike"
+        android:layout_marginTop="15dp"
+        android:text="Wind Speed:" />
+
+    <TextView
+        android:id="@+id/lblConditions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/Condition_type"
+        android:layout_alignBottom="@+id/Condition_type"
+        android:layout_alignStart="@+id/lblWindSpeed"
+        android:text="Conditions:" />
+
+    <TextView
+        android:id="@+id/humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lblHumidity"
+        android:layout_alignBottom="@+id/lblHumidity"
+        android:layout_alignStart="@+id/Condition_type"
+        android:layout_marginTop="15dp"
+        android:text="Humidity" />
+
+    <TextView
+        android:id="@+id/lblHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/lblConditions"
+        android:layout_below="@+id/lblConditions"
+        android:layout_marginTop="15dp"
+        android:text="Humidity:" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="34dp"
+        android:layout_marginTop="22dp"
+        android:layout_toStartOf="@+id/CurrentTemp"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_light" />
+
+    <!-- Bottom Navigation Bar -->
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottomNavView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimary"
+        app:itemTextColor="#ffffff"
+        app:itemIconTint="#ffffff"
+        android:clickable="true"
+        app:menu="@menu/bottom_nav_menu" />
+
+</RelativeLayout>
