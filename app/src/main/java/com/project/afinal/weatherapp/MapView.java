@@ -1,5 +1,15 @@
 package com.project.afinal.weatherapp;
 
+
+/**
+ * SOFE4640 Final Project
+ * Weather App
+ *
+ * @author Albert Fung, Alexei dela Pena, Daljit Sohi
+ * Due: December 15, 2017
+ */
+
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -72,12 +82,13 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
 
         legendImage = findViewById(R.id.legend);
 
+        //handles the dropdown menu for the weather conditions overlay
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapView.this, android.R.layout.simple_spinner_dropdown_item, tileTypesArray);
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                switch (position){
+                switch (position) {
                     case 0:
                         tileType = "clouds_new";
                         tileOverlay.remove();
@@ -162,13 +173,11 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        groundOverlay(bitmapDescriptor);
-
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MapView.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION}, 456);
+                    Manifest.permission.ACCESS_COARSE_LOCATION}, 456);
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -178,7 +187,6 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
         final TileProvider tileProvider = new UrlTileProvider(256, 256) {
             @Override
             public URL getTileUrl(int x, int y, int zoom) {
-//                String format_url = String.format(OWM_TILE_URL, tileType == null ? "clouds_new" : tileType, zoom, x, y);
                 String format_url = String.format(OWM_TILE_URL, tileType, zoom, x, y);
                 URL url = null;
                 try {
@@ -198,7 +206,7 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                 mMap.clear();
 
                 newLatLng = latLng;
-                weatherAPI_url = "http://api.wunderground.com/api/2b118671ed3cb3c2/conditions/q/"+newLatLng.latitude+","+newLatLng.longitude+".json";
+                weatherAPI_url = "http://api.wunderground.com/api/2b118671ed3cb3c2/conditions/q/" + newLatLng.latitude + "," + newLatLng.longitude + ".json";
                 FetchWeatherData weatherFor_SelectedLocation = new FetchWeatherData();
                 weatherFor_SelectedLocation.execute(weatherAPI_url);
 
@@ -210,12 +218,14 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
 
     }//end onMapReady()
 
-/** ------------------ AsynTask Class ---------------- **/
+    /**
+     * ------------------ AsynTask Class ----------------
+     **/
     private class FetchWeatherData extends AsyncTask<String, Void, String> {
         String jsonData = null;
         JSONObject weatherData;
         StringBuilder sb = new StringBuilder();
-        String location="", currentTemp="", conditionType="";
+        String location = "", currentTemp = "", conditionType = "";
 
         @Override
         protected String doInBackground(String... params) {
@@ -229,8 +239,8 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
-                while((line = bufferedReader.readLine()) != null){
-                    if(!line.trim().isEmpty()){
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
                         sb.append(line + "\n");
                     }
                 }//end while loop
@@ -256,7 +266,7 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                 JSONObject displayLocation_JSONObject = currentObservation_JSONObject.getJSONObject("display_location");
 
                 location = displayLocation_JSONObject.getString("full");
-                currentTemp =  currentObservation_JSONObject.getString("temp_c");
+                currentTemp = currentObservation_JSONObject.getString("temp_c");
                 conditionType = currentObservation_JSONObject.getString("weather");
 
                 Location = location;
@@ -266,13 +276,14 @@ public class MapView extends AppCompatActivity implements OnMapReadyCallback {
                 //Set Marker Options
                 MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(newLatLng.latitude, newLatLng.longitude))
                         .title(Location)
-                        .snippet("Temperature: " + CurrentTemp + "\n" + "Current Conditions " + Condition +"\n")
+                        .snippet("Temperature: " + CurrentTemp + "\n" + "Current Conditions " + Condition + "\n")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                     @Override
                     public View getInfoWindow(Marker marker) {
                         return null;
                     }
+
                     @Override
                     public View getInfoContents(Marker marker) {
                         LinearLayout info = new LinearLayout(MapView.this);

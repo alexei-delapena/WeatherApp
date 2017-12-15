@@ -1,6 +1,14 @@
 package com.project.afinal.weatherapp;
 
 /**
+ * SOFE4640 Final Project
+ * Weather App
+ *
+ * @author Albert Fung, Alexei dela Pena, Daljit Sohi
+ * Due: December 15, 2017
+ */
+
+/**
  * This class stores info about each Forecast of each day
  * -> For each day this class stores
  *  - High Temp
@@ -17,7 +25,7 @@ public class Forecast {
     private String day;
 
     //Constructor
-    public Forecast(String highTemp, String lowTemp, String condition, String day){
+    public Forecast(String highTemp, String lowTemp, String condition, String day) {
         this.highTemp = highTemp;
         this.lowTemp = lowTemp;
         this.condition = condition;

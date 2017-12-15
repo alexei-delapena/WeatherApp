@@ -1,14 +1,18 @@
 package com.project.afinal.weatherapp;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -34,6 +38,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+
+/**
+ * SOFE4640 Final Project
+ * Weather App
+ *
+ * @author Albert Fung, Alexei dela Pena, Daljit Sohi
+ *         Due: December 15, 2017
+ */
+
 public class ForecastView extends AppCompatActivity {
 
     private static final String LogT = "ForecastView";
@@ -53,17 +66,37 @@ public class ForecastView extends AppCompatActivity {
 
         listView = findViewById(R.id.forecastListView);
         wunderground_API = getResources().getString(R.string.wunderground_API);
-//        weatherAPI_url = "http://api.wunderground.com/api/"+wunderground_API+"/forecast/q/43.6532,-79.3832.json"; //Location -> Downtown Toronto
-//        FetchForecastData fetchWeatherData = new FetchForecastData();
-//        forecastData = new FetchForecastData();
-//        forecastData.execute(weatherAPI_url);
-        getDeviceLocation();
 
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            //Alert the User if GPS is Not Enabled
+            AlertDialog.Builder builder = new AlertDialog.Builder(ForecastView.this);
+            builder.setTitle("Please Enable GPS");
+            builder.setMessage("Location Services must be enabled to receive weather data for your current location");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent gpsOptionsIntent = new Intent(
+                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(gpsOptionsIntent);
+                }
+            }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/43.6532,-79.3832.json"; //Location -> Downtown Toronto
+                    forecastData = new FetchForecastData(); //Download JSON data using the 'wunderground' API
+                    forecastData.execute(weatherAPI_url);
+                }
+            }).setIcon(android.R.drawable.ic_dialog_alert).show();
+        }//end if block --> Check if location is enabled
+        else {
+            getDeviceLocation();
+        }
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_today:
                         Intent intent_today = new Intent(ForecastView.this, WeatherActivity.class);
                         startActivity(intent_today);
@@ -84,7 +117,7 @@ public class ForecastView extends AppCompatActivity {
     }//end onCreate()
 
     // ---------------------- Get Device Location ---------------------- //
-    public void getDeviceLocation(){
+    public void getDeviceLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -107,28 +140,22 @@ public class ForecastView extends AppCompatActivity {
         });
     }//end getDeviceLocation()
 
-    public void onLocationChange(Location loc){
-        try {
-            Log.d(LogT, "Location: " + loc);
-            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/"+loc.getLatitude()+","+loc.getLongitude()+".json";
-            Log.d(LogT, "Fetching data from: " + weatherAPI_url);
-            forecastData = new FetchForecastData();
-            forecastData.execute(weatherAPI_url);
-        } catch (Exception e) {
-            Log.d(LogT, "Location: " + loc);
-            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/"+"43.6532,-79.3832" + ".json";
-            Log.d(LogT, "Fetching data from: " + weatherAPI_url);
-            forecastData = new FetchForecastData();
-            forecastData.execute(weatherAPI_url);
-        }
+    public void onLocationChange(Location loc) {
+        Log.d(LogT, "Location: " + loc);
+        weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".json";
+        Log.d(LogT, "Fetching data from: " + weatherAPI_url);
+        forecastData = new FetchForecastData();
+        forecastData.execute(weatherAPI_url);
     }//end onLocationChange()
 
-    /** ------------------ AsynTask Class ---------------- **/
+    /**
+     * ------------------ AsyncTask Class ----------------
+     **/
     private class FetchForecastData extends AsyncTask<String, Void, String> {
         String jsonData = null;
         JSONObject forecastData;
         StringBuilder sb = new StringBuilder();
-        String hightemp = "", lowtemp = "", day="", condition="";
+        String hightemp = "", lowtemp = "", day = "", condition = "";
         ArrayList<Forecast> forcastList = new ArrayList<>();
 
         @Override

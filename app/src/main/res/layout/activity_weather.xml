@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/FeelsLike"
-        android:layout_alignTop="@+id/imageView"
+        android:layout_alignTop="@+id/imageViewCondition"
         android:text="Temp"
         android:textSize="55dp" />
 
@@ -48,7 +48,7 @@
         android:id="@+id/Location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignBottom="@+id/imageViewCondition"
         android:layout_alignStart="@+id/CurrentTemp"
         android:text="Location" />
 
@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/WindSpeed"
-        android:layout_alignStart="@+id/imageView"
+        android:layout_alignStart="@+id/imageViewCondition"
         android:text="Feels Like:" />
 
     <TextView
@@ -108,7 +108,7 @@
         android:text="Humidity:" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewCondition"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
@@ -128,5 +128,4 @@
         app:itemIconTint="#ffffff"
         android:clickable="true"
         app:menu="@menu/bottom_nav_menu" />
-
 </RelativeLayout>

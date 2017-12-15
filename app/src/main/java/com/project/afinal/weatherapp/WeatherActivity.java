@@ -1,11 +1,15 @@
 package com.project.afinal.weatherapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
@@ -18,8 +22,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,11 +40,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * SOFE4640 Final Project
+ * Weather App
+ *
+ * @author Albert Fung, Alexei dela Pena, Daljit Sohi
+ * Due: December 15, 2017
+ */
 
 /**
  * This Activity Displays TODAY'S Weather -> The Weather is updated every 2.5 hours
@@ -50,12 +63,13 @@ public class WeatherActivity extends AppCompatActivity {
     private static final String LogT = "WEATHER_ACTIVITY :: ";
 
     //Declaring Variables
-    DeviceLocation deviceLoc;
     FusedLocationProviderClient fusedLocationProviderClient;
     String wunderground_API;
     String weatherAPI_url;
     FetchWeatherData weatherData;
     TextView lbl_currentTemp, lbl_feelsLike, lbl_windSpeed, lbl_location, lbl_conditionsType, lbl_humitidy;
+    ImageView imageViewCondition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +83,10 @@ public class WeatherActivity extends AppCompatActivity {
         lbl_location = findViewById(R.id.Location);
         lbl_conditionsType = findViewById(R.id.Condition_type);
         lbl_humitidy = findViewById(R.id.humidity);
+        imageViewCondition = findViewById(R.id.imageViewCondition);
 
         //Initializing Variables
         wunderground_API = getResources().getString(R.string.wunderground_API);
-//        weatherAPI_url = "http://api.wunderground.com/api/"+ wunderground_API+"/conditions/q/43.6532,-79.3832.json"; //Location -> Downtown Toronto
-//        weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
-//        weatherData.execute(weatherAPI_url);
 
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
@@ -156,19 +168,10 @@ public class WeatherActivity extends AppCompatActivity {
     }//end getDeviceLocation()
 
     public void onLocationChange(Location loc) {
-    try {
-
         Log.d(LogT, "Location: " + loc);
-        weatherAPI_url = "http://api. wunderground.com/api/" + wunderground_API + "/conditions/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".json";
+        weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".json";
         weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
         weatherData.execute(weatherAPI_url);
-
-        } catch (Exception e) {
-            Log.d(LogT, "Location: " + loc);
-            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/"+"43.6532,-79.3832" + ".json";
-            weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
-            weatherData.execute(weatherAPI_url);
-        }
     }//end onLocationChange()
 
 
@@ -181,6 +184,8 @@ public class WeatherActivity extends AppCompatActivity {
         StringBuilder sb = new StringBuilder();
         String currentTemp = "";
         String feelsLike = "", windSpeed = "", location = "", conditionType = "", humidity = "";
+        URL iconUrl;
+        Bitmap mIcon_val;
 
         @Override
         protected String doInBackground(String... params) {
@@ -209,6 +214,7 @@ public class WeatherActivity extends AppCompatActivity {
             return jsonData;
         }//end doInBackground()
 
+        @SuppressLint("ResourceType")
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
@@ -228,7 +234,6 @@ public class WeatherActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             //Set TextViews
             lbl_currentTemp.setText(Math.round(Double.parseDouble(currentTemp)) + " °C"); //'°' --> ALT 248
             lbl_feelsLike.setText(feelsLike + " °C");
@@ -236,11 +241,80 @@ public class WeatherActivity extends AppCompatActivity {
             lbl_location.setText(location);
             lbl_conditionsType.setText(conditionType);
             lbl_humitidy.setText(humidity);
+            //Snow Icon
+            if (conditionType.equals("Light Snow")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
+            if (conditionType.equals("Flurries")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
+            if (conditionType.equals("Chance of Flurries")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
+            if (conditionType.equals("Chance of Snow")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
+            if (conditionType.equals("Snow")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
+            if (conditionType.equals("Snows Showers")) {
+                imageViewCondition.setImageResource(R.raw.snow);
+            }
 
-            ImageView image = (ImageView) findViewById(R.id.imageView);
-            image.setImageResource(R.raw.cloudy);
+            //Cloud Icon
+            if (conditionType.equals("Partly Cloudy")) {
+                imageViewCondition.setImageResource(R.raw.cloudy);
+            }
+            if (conditionType.equals("Cloudy")) {
+                imageViewCondition.setImageResource(R.raw.cloudy);
+            }
+            if (conditionType.equals("Fog")) {
+                imageViewCondition.setImageResource(R.raw.cloudy);
+            }
+            if (conditionType.equals("Haze")) {
+                imageViewCondition.setImageResource(R.raw.cloudy);
+            }
+            if (conditionType.equals("Mostly Cloudy")) {
+                imageViewCondition.setImageResource(R.raw.cloudy);
+            }
+            //Rain Icon
+            if (conditionType.equals("Chance of Sleet")) {
+                imageViewCondition.setImageResource(R.raw.rain);
+            }
+            if (conditionType.equals("Chance of Rain")) {
+                imageViewCondition.setImageResource(R.raw.rain);
+            }
+            if (conditionType.equals("Rain")) {
+                imageViewCondition.setImageResource(R.raw.rain);
+            }
+            if (conditionType.equals("Sleet")) {
+                imageViewCondition.setImageResource(R.raw.rain);
+            }
 
+            //Sunny Icon
+            if (conditionType.equals("Clear")) {
+                imageViewCondition.setImageResource(R.raw.clear);
+            }
+            if (conditionType.equals("Mostly Sunny")) {
+                imageViewCondition.setImageResource(R.raw.clear);
+            }
+            if (conditionType.equals("Partly Sunny")) {
+                imageViewCondition.setImageResource(R.raw.clear);
+            }
+            if (conditionType.equals("Sunny")) {
+                imageViewCondition.setImageResource(R.raw.clear);
+            }
 
+            //Thunder Icon
+            if (conditionType.equals("Chance of Storm")) {
+                imageViewCondition.setImageResource(R.raw.thunder);
+            }
+            if (conditionType.equals("Storm")) {
+                imageViewCondition.setImageResource(R.raw.thunder);
+            }
+            if (conditionType.equals("Thunder Storm")) {
+                imageViewCondition.setImageResource(R.raw.thunder);
+            }
         }//end onPostExecute()
     }//end FetchWeatherData.class
 
