@@ -108,11 +108,19 @@ public class ForecastView extends AppCompatActivity {
     }//end getDeviceLocation()
 
     public void onLocationChange(Location loc){
-        Log.d(LogT, "Location: " + loc);
-        weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/"+loc.getLatitude()+","+loc.getLongitude()+".json";
-        Log.d(LogT, "Fetching data from: " + weatherAPI_url);
-        forecastData = new FetchForecastData();
-        forecastData.execute(weatherAPI_url);
+        try {
+            Log.d(LogT, "Location: " + loc);
+            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/"+loc.getLatitude()+","+loc.getLongitude()+".json";
+            Log.d(LogT, "Fetching data from: " + weatherAPI_url);
+            forecastData = new FetchForecastData();
+            forecastData.execute(weatherAPI_url);
+        } catch (Exception e) {
+            Log.d(LogT, "Location: " + loc);
+            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/forecast/q/"+"43.6532,-79.3832" + ".json";
+            Log.d(LogT, "Fetching data from: " + weatherAPI_url);
+            forecastData = new FetchForecastData();
+            forecastData.execute(weatherAPI_url);
+        }
     }//end onLocationChange()
 
     /** ------------------ AsynTask Class ---------------- **/

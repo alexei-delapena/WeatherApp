@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -76,7 +77,7 @@ public class WeatherActivity extends AppCompatActivity {
 //        weatherData.execute(weatherAPI_url);
 
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             //Alert the User if GPS is Not Enabled
             AlertDialog.Builder builder = new AlertDialog.Builder(WeatherActivity.this);
             builder.setTitle("Please Enable GPS");
@@ -91,20 +92,20 @@ public class WeatherActivity extends AppCompatActivity {
             }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    weatherAPI_url = "http://api.wunderground.com/api/"+ wunderground_API+"/conditions/q/43.6532,-79.3832.json"; //Location -> Downtown Toronto
+                    weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/43.6532,-79.3832.json"; //Location -> Downtown Toronto
                     weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
                     weatherData.execute(weatherAPI_url);
                 }
             }).setIcon(android.R.drawable.ic_dialog_alert).show();
         }//end if block --> Check if location is enabled
-        else{
+        else {
             getDeviceLocation();
         }
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_today:
                         break;
                     case R.id.action_map:
@@ -123,7 +124,7 @@ public class WeatherActivity extends AppCompatActivity {
     }//end onCreate()
 
     //Button Click --> Fetch Toronto Data
-    public void getWeatherData(View view){
+    public void getWeatherData(View view) {
 //        weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
 //        weatherData.execute(weatherAPI_url);
         getDeviceLocation();
@@ -131,7 +132,7 @@ public class WeatherActivity extends AppCompatActivity {
 
 
     // ---------------------- Get Device Location ---------------------- //
-    public void getDeviceLocation(){
+    public void getDeviceLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -154,21 +155,32 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }//end getDeviceLocation()
 
-    public void onLocationChange(Location loc){
+    public void onLocationChange(Location loc) {
+    try {
+
         Log.d(LogT, "Location: " + loc);
-        weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/"+loc.getLatitude()+","+loc.getLongitude()+".json";
+        weatherAPI_url = "http://api. wunderground.com/api/" + wunderground_API + "/conditions/q/" + loc.getLatitude() + "," + loc.getLongitude() + ".json";
         weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
         weatherData.execute(weatherAPI_url);
+
+        } catch (Exception e) {
+            Log.d(LogT, "Location: " + loc);
+            weatherAPI_url = "http://api.wunderground.com/api/" + wunderground_API + "/conditions/q/"+"43.6532,-79.3832" + ".json";
+            weatherData = new FetchWeatherData(); //Download JSON data using the 'wunderground' API
+            weatherData.execute(weatherAPI_url);
+        }
     }//end onLocationChange()
 
 
-    /** ------------------ AsynTask Class ---------------- **/
+    /**
+     * ------------------ AsynTask Class ----------------
+     **/
     private class FetchWeatherData extends AsyncTask<String, Void, String> {
         String jsonData = null;
         JSONObject weatherData;
         StringBuilder sb = new StringBuilder();
         String currentTemp = "";
-        String feelsLike="", windSpeed="", location="", conditionType="", humidity="";
+        String feelsLike = "", windSpeed = "", location = "", conditionType = "", humidity = "";
 
         @Override
         protected String doInBackground(String... params) {
@@ -180,8 +192,8 @@ public class WeatherActivity extends AppCompatActivity {
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
-                while((line = bufferedReader.readLine()) != null){
-                    if(!line.trim().isEmpty()){
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (!line.trim().isEmpty()) {
                         sb.append(line + "\n");
                     }
                 }//end while loop
@@ -207,7 +219,7 @@ public class WeatherActivity extends AppCompatActivity {
                 JSONObject displayLocation_JSONObject = currentObservation_JSONObject.getJSONObject("display_location");
 
                 location = displayLocation_JSONObject.getString("full");
-                currentTemp =  currentObservation_JSONObject.getString("temp_c");
+                currentTemp = currentObservation_JSONObject.getString("temp_c");
                 feelsLike = currentObservation_JSONObject.getString("feelslike_c");
                 windSpeed = currentObservation_JSONObject.getString("wind_kph");
                 conditionType = currentObservation_JSONObject.getString("weather");
@@ -224,6 +236,11 @@ public class WeatherActivity extends AppCompatActivity {
             lbl_location.setText(location);
             lbl_conditionsType.setText(conditionType);
             lbl_humitidy.setText(humidity);
+
+            ImageView image = (ImageView) findViewById(R.id.imageView);
+            image.setImageResource(R.raw.cloudy);
+
+
         }//end onPostExecute()
     }//end FetchWeatherData.class
 
